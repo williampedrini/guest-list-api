@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changelogs/ddl/1649933472-create-party-table.yaml
+  - include:
+      file: db/changelog/changelogs/ddl/1649933645-create-party-table-table.yaml
+  - include:
+      file: db/changelog/changelogs/ddl/1649933868-create-guest-table.yaml

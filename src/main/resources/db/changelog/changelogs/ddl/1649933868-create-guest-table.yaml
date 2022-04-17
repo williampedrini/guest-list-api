@@ -1,0 +1,57 @@
+databaseChangeLog:
+  - changeSet:
+      id: 48743d44-94d9-4770-b45b-a4ffe9e663b4
+      author: williamcustodio
+      changes:
+        - createTable:
+            tableName: guest
+            remarks: "Table containing all the guests of a party."
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  remarks: "Guest's unique identifier."
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar(255)
+                  remarks: "The name of the person."
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: arrival_time
+                  type: datetime
+                  remarks: "The date and time that the guest arrived at the party."
+                  constraints:
+                    nullable: true
+              - column:
+                  name: leave_time
+                  type: datetime
+                  remarks: "The date and time that the guest left the party."
+                  constraints:
+                    nullable: true
+              - column:
+                  name: entourage_quantity
+                  type: int
+                  remarks: "The number of people part of the guest's entourage."
+                  constraints:
+                    nullable: true
+              - column:
+                  name: table_id
+                  type: bigint
+                  remarks: "The identifier of the table where the guest will be placed."
+                  constraints:
+                    nullable: false
+                    unique: true
+        - addForeignKeyConstraint:
+            baseColumnNames: table_id
+            baseTableName: guest
+            constraintName: guest_party_table_fk
+            onDelete: CASCADE
+            referencedColumnNames: id
+            referencedTableName: party_table
+            validate: true

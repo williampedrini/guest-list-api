@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0e9f52b8-8cc8-4a8c-a262-6a707b1f2ab2
+      author: williamcustodio
+      changes:
+        - createTable:
+            tableName: party_table
+            remarks: "Table containing all the party's tables."
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  remarks: "Table's unique identifier."
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: number
+                  type: int
+                  remarks: "The table number."
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: number_of_seats
+                  type: int
+                  remarks: "The number of the table seats."
+                  constraints:
+                    nullable: false
+              - column:
+                  name: party_id
+                  type: bigint
+                  remarks: "The identifier of the party where this table will be placed."
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseColumnNames: party_id
+            baseTableName: party_table
+            constraintName: party_party_table_fk
+            onDelete: CASCADE
+            referencedColumnNames: id
+            referencedTableName: party
+            validate: true

@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: c803fc78-c955-49a6-ab06-5c62435f3182
+      author: williamcustodio
+      changes:
+        - createTable:
+            tableName: party
+            remarks: "Table containing all parties."
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  remarks: "Party's unique identifier."
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: place
+                  type: varchar(255)
+                  remarks: "The place where it will happen."
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  remarks: "The party name."
+                  constraints:
+                    nullable: false
+                    unique: true
