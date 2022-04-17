@@ -26,7 +26,7 @@ public class GuestEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "arrival_time")
@@ -39,7 +39,7 @@ public class GuestEntity {
     private int entourageQuantity;
 
     @OneToOne(cascade = ALL)
-    @JoinColumn(name = "table_id", referencedColumnName = "id")
+    @JoinColumn(name = "table_id", referencedColumnName = "id", unique = true)
     private TableEntity table;
 
     public GuestEntity() {

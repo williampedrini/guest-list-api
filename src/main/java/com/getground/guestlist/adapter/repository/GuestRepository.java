@@ -29,7 +29,7 @@ interface GuestRepository extends JpaRepository<GuestEntity, Long>, GuestPort {
      * @return All found existing guests.
      */
     @NonNull
-    @Query("select g from PartyEntity e inner join e.tables t inner join t.guest g where e.id = :partyId and g.arrivalTime is not null")
+    @Query("select g from PartyEntity e inner join e.tables t inner join t.guest g where e.id = :partyId and g.arrivalTime is not null and g.leaveTime is null")
     Collection<GuestEntity> findAllArrivedByPartyId(@Param("partyId") long partyId);
 
     /**

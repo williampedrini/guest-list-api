@@ -13,7 +13,7 @@ create table party_table
     number          int    not null comment 'The table number.',
     number_of_seats int    not null comment 'The number of the table seats.',
     party_id        bigint not null comment 'The identifier of the party where this table will be placed.',
-    constraint number unique (number),
+    constraint table_party_uk unique (number, party_id),
     constraint party_party_table_fk foreign key (party_id) references party (id) on delete cascade
 ) comment 'Table containing all the party''s tables.';
 
@@ -21,11 +21,10 @@ create table guest
 (
     id                 bigint auto_increment primary key,
     name               varchar(255) not null comment 'The name of the person.',
-    arrival_time       datetime null comment 'The date and time that the guest arrived at the party.',
-    leave_time         datetime null comment 'The date and time that the guest left the party.',
-    entourage_quantity int null comment 'The number of people part of the guest''s entourage.',
+    arrival_time       datetime     null comment 'The date and time that the guest arrived at the party.',
+    leave_time         datetime     null comment 'The date and time that the guest left the party.',
+    entourage_quantity int          null comment 'The number of people part of the guest''s entourage.',
     table_id           bigint       not null comment 'The identifier of the table where the guest will be placed.',
-    constraint name unique (name),
     constraint table_id unique (table_id),
     constraint guest_party_table_fk foreign key (table_id) references party_table (id) on delete cascade
 ) comment 'Table containing all the guests of a party.';

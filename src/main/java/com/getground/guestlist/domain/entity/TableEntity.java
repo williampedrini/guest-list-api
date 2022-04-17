@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
@@ -18,14 +19,14 @@ import static java.util.Optional.ofNullable;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
-@Table(name = "party_table")
+@Table(name = "party_table", uniqueConstraints = @UniqueConstraint(name = "table_party_uk", columnNames = {"number", "party_id"}))
 public class TableEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "number", nullable = false, unique = true)
+    @Column(name = "number", nullable = false)
     private Integer number;
 
     @Column(name = "number_of_seats", nullable = false)

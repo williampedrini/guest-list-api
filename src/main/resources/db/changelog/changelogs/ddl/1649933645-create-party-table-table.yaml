@@ -21,7 +21,6 @@ databaseChangeLog:
                   remarks: "The table number."
                   constraints:
                     nullable: false
-                    unique: true
               - column:
                   name: number_of_seats
                   type: int
@@ -41,4 +40,9 @@ databaseChangeLog:
             onDelete: CASCADE
             referencedColumnNames: id
             referencedTableName: party
+            validate: true
+        - addUniqueConstraint:
+            columnNames: number, party_id
+            constraintName: table_party_uk
+            tableName: party_table
             validate: true
