@@ -97,6 +97,10 @@ Run the application with the following command inside the [root folder](.):
 
 ## RUNNING TESTS
 
+The current application contains a sample data to be used for testing purposes. 
+
+The sample data will be created during the database startup via the [dump.sql](./mysql/dump.sql) script after executing the command `docker-compose up`.
+
 ### SwaggerUI
 
 1. Access the [api documentation](http://localhost:8080/swagger-ui.html).
