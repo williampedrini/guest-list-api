@@ -6,8 +6,11 @@ import com.getground.guestlist.adapter.controller.model.ErrorResponse;
 import com.getground.guestlist.adapter.controller.model.GetEmptySeatResponse;
 import com.getground.guestlist.adapter.controller.model.GetGuestListResponse;
 import com.getground.guestlist.adapter.controller.model.GetGuestResponse;
+import com.getground.guestlist.adapter.controller.model.GuestArriveRequest;
+import com.getground.guestlist.adapter.controller.model.GuestArriveResponse;
 import com.getground.guestlist.usecase.AddGuestToGuestList;
 import com.getground.guestlist.usecase.FindGuest;
+import com.getground.guestlist.usecase.RegisterGuestArrival;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -19,6 +22,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,11 +39,14 @@ class GuestListController {
 
     private final AddGuestToGuestList addGuestToGuestList;
     private final FindGuest findGuest;
+    private final RegisterGuestArrival registerGuestArrival;
 
     GuestListController(@NonNull final AddGuestToGuestList addGuestToGuestList,
-                        @NonNull final FindGuest findGuest) {
+                        @NonNull final FindGuest findGuest,
+                        @NonNull final RegisterGuestArrival registerGuestArrival) {
         this.addGuestToGuestList = requireNonNull(addGuestToGuestList, "The addGuestToGuestList use case is mandatory.");
         this.findGuest = requireNonNull(findGuest, "The findGuest use case is mandatory.");
+        this.registerGuestArrival = requireNonNull(registerGuestArrival, "The registerGuestArrival use case is mandatory.");
     }
 
     @ResponseStatus(OK)
@@ -103,5 +110,26 @@ class GuestListController {
         LOGGER.debug("Performing search of all existing empty seats. [PARTY_ID={}]", partyId);
         final var emptySeats = findGuest.findEmptySeats(partyId);
         return new GetEmptySeatResponse(emptySeats);
+    }
+
+    @ResponseStatus(OK)
+    @PutMapping("/parties/{partyId}/guest_list/{name}")
+    @ApiOperation(value = "registerGuestArrival", notes = "Registers a guest arrival.", nickname = "registerGuestArrival")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "The guest arrival is successfully registered.", response = GuestArriveResponse.class),
+            @ApiResponse(code = 400, message = "Error while performing pre-validations against the guest addition.", response = ErrorResponse.class),
+            @ApiResponse(code = 500, message = "Internal error while processing the request.", response = ErrorResponse.class)
+    })
+    GuestArriveResponse registerGuestArrival(@ApiParam(value = "The identifier of the party. <b>Do not change this value for testing.</b>", required = true, example = "1", defaultValue = "1")
+                                             @PathVariable(name = "partyId") final long partyId,
+
+                                             @ApiParam(value = "The name of the guest.", required = true, example = "Wanda Hum")
+                                             @PathVariable(name = "name") final String guestName,
+
+                                             @ApiParam(value = "The representation of guest arrival registration request.", required = true)
+                                             @Valid @RequestBody final GuestArriveRequest request) {
+        LOGGER.debug("Marking guest as arrived. [PARTY_ID={},GUEST_NAME={}, REQUEST={}]", partyId, guestName, request);
+        registerGuestArrival.register(request.toRegisterGuestArrival(partyId, guestName));
+        return new GuestArriveResponse(guestName);
     }
 }
