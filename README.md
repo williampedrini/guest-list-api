@@ -2,6 +2,10 @@
 
 This project contains the representation of an API responsible for performing the management of a guest list for a party. 
 
+## DOMAIN 
+
+![](./mysql/entity-relationship-model.png)
+
 ## ASSUMPTIONS
 
 ```
@@ -15,6 +19,7 @@ Guests will also leave throughout the course of the party. Note that when a gues
 ```
 - No one can use the guest's table even if this guest has left.
 - Once they leave, they cannot go back.
+- Once they leave, they will not be considered as arrived. 
 
 ## RUNNING IN DOCKER 
 
