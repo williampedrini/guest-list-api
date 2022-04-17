@@ -55,4 +55,13 @@ public class FindGuestTest {
         //then
         assertEquals(0, actual.size());
     }
+
+    @Test
+    @Sql("classpath:test-cases/use-case/find-guest/when-there-are-empty-seats/insert.sql")
+    public void when_ThereAreEmptySeats_Then_ShouldSuccessfullyReturnTheEmptySeatCount() {
+        //when
+        final var actual = underTest.findEmptySeats(1);
+        //then
+        assertEquals(2, actual);
+    }
 }
