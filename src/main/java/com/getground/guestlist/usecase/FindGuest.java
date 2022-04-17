@@ -1,5 +1,6 @@
 package com.getground.guestlist.usecase;
 
+import com.getground.guestlist.domain.entity.GuestEntity;
 import com.getground.guestlist.domain.port.GuestPort;
 import com.getground.guestlist.domain.port.TablePort;
 import com.getground.guestlist.usecase.model.Guest;
@@ -14,9 +15,11 @@ import static java.util.stream.Collectors.toList;
 @Component
 public class FindGuest {
     private final GuestPort guestPort;
+    private final TablePort tablePort;
 
     public FindGuest(@NonNull final GuestPort guestPort, @NonNull final TablePort tablePort) {
         this.guestPort = requireNonNull(guestPort, "The guest port is mandatory.");
+        this.tablePort = requireNonNull(tablePort, "The table port is mandatory.");
     }
 
     /**
@@ -45,5 +48,24 @@ public class FindGuest {
                 .stream()
                 .map(guest -> new Guest(partyId, guest))
                 .collect(toList());
+    }
+
+    /**
+     * Searches for all the empty seats for a party.
+     *
+     * @param partyId The party identifier.
+     * @return The number of empty seats.
+     */
+    public int findEmptySeats(final long partyId) {
+        return tablePort.findAllByPartyId(partyId)
+                .stream()
+                .mapToInt(table -> {
+                    final var numberOfSeats = table.getNumberOfSeats();
+                    final var numberOfUsedSeats = table.getGuest()
+                            .map(GuestEntity::getEntourageQuantity)
+                            .orElse(0);
+                    return numberOfSeats - numberOfUsedSeats;
+                })
+                .sum();
     }
 }
