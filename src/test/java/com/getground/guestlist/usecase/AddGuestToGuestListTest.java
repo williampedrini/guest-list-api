@@ -52,7 +52,7 @@ public class AddGuestToGuestListTest {
         //when
         final var actual = assertThrows(IllegalArgumentException.class, () -> underTest.add(guest));
         //then
-        final var expected = "The guest with name Sharon Parkinson is already associated to the table number 1.";
+        final var expected = "The guest with name Jake Fuller is already associated to the table number 1.";
         assertEquals(expected, actual.getMessage());
     }
 

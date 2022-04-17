@@ -36,7 +36,7 @@ public class RegisterGuestLeave {
 
         final var guestEntity = guestPort.findByNameAndTableId(guestName, tableEntity.getId().orElse(null))
                 .orElseThrow(() -> {
-                    final var errorMessage = "The guest with name %s is registered to the table with number %s.";
+                    final var errorMessage = "The guest with name %s is not registered to the table with number %s.";
                     return new IllegalArgumentException(format(errorMessage, guestName, tableEntity.getNumber()));
                 });
         guestEntity.setLeaveTime(now());

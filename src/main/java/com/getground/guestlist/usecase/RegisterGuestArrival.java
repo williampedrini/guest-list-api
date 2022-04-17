@@ -43,7 +43,7 @@ public class RegisterGuestArrival {
 
         final var guestEntity = guestPort.findByNameAndTableId(registerGuestArrival.getName(), tableEntity.getId().orElse(null))
                 .orElseThrow(() -> {
-                    final var errorMessage = "The guest with name %s is registered to the table with number %s.";
+                    final var errorMessage = "The guest with name %s is not registered to the table with number %s.";
                     return new IllegalArgumentException(format(errorMessage, registerGuestArrival.getName(), tableEntity.getNumber()));
                 });
         guestEntity.setArrivalTime(now());

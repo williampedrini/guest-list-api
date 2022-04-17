@@ -46,6 +46,6 @@ public class AddGuestToGuestList {
             return;
         }
         final var errorMessage = "The guest with name %s is already associated to the table number %s.";
-        throw new IllegalArgumentException(format(errorMessage, guest.getName(), guest.getTableNumber()));
+        throw new IllegalArgumentException(format(errorMessage, tableEntity.getGuest().get().getName(), guest.getTableNumber()));
     }
 }
