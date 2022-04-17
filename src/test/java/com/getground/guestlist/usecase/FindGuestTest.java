@@ -37,4 +37,22 @@ public class FindGuestTest {
         //then
         assertEquals(0, actual.size());
     }
+
+    @Test
+    @Sql("classpath:test-cases/use-case/find-guest/when-there-are-arrived-guests-for-party/insert.sql")
+    public void when_ThereAreArrivedGuestsForPartyId_Then_ShouldSuccessfullyReturnAllGuestsForParty() {
+        //when
+        final var actual = underTest.findAllArrivedByPartyId(1);
+        //then
+        assertEquals(1, actual.size());
+    }
+
+    @Test
+    @Sql("classpath:test-cases/use-case/find-guest/when-there-are-not-arrived-guests-for-party/insert.sql")
+    public void when_ThereAreNotArrivedGuestsForPartyId_Then_ShouldSuccessfullyReturnEmptyGuestListForParty() {
+        //when
+        final var actual = underTest.findAllArrivedByPartyId(1);
+        //then
+        assertEquals(0, actual.size());
+    }
 }
