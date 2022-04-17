@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: a5771499-46d3-43d6-b6ec-d376aa806585
+      author: williamcustodio
+      changes:
+        - insert:
+            columns:
+              - column:
+                  name: place
+                  value: "London Party House"
+              - column:
+                  name: name
+                  value: "GetGround 2021 end party"
+            tableName: party

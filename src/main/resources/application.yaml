@@ -5,3 +5,5 @@ spring:
     username: ${DATA_SOURCE_USERNAME}
     password: ${DATA_SOURCE_PASSWORD}
     driverClassName: com.mysql.cj.jdbc.Driver
+  liquibase:
+    enabled: ${LIQUIBASE_ENABLED}

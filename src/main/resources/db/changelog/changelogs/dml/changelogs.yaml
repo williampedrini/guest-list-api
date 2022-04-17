@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changelogs/dml/1649934375-create-party-sample.yaml
+  - include:
+      file: db/changelog/changelogs/dml/1649934515-create-table-sample.yaml

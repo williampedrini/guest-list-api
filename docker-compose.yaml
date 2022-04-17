@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     container_name: guest-list-api
     environment:
-      - APPLICATION_ARGS=-DDATA_SOURCE_URL=jdbc:mysql://database:3306/guest-list -DDATA_SOURCE_USERNAME=guest-list -DDATA_SOURCE_PASSWORD=guest-list
+      - APPLICATION_ARGS=-DDATA_SOURCE_URL=jdbc:mysql://database:3306/guest-list -DDATA_SOURCE_USERNAME=guest-list -DDATA_SOURCE_PASSWORD=guest-list -DLIQUIBASE_ENABLED=false
     ports:
       - "8080:8080"
     depends_on:
@@ -26,3 +26,5 @@ services:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
       timeout: 20s
       retries: 10
+    volumes:
+      - "./mysql/dump.sql:/docker-entrypoint-initdb.d/dump.sql"
