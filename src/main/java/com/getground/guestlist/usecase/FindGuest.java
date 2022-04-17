@@ -32,4 +32,18 @@ public class FindGuest {
                 .map(guest -> new Guest(partyId, guest))
                 .collect(toList());
     }
+
+    /**
+     * Searches for all existing guests for a certain party.
+     *
+     * @param partyId The party identifier.
+     * @return All found existing guests.
+     */
+    @NonNull
+    public Collection<Guest> findAllArrivedByPartyId(final long partyId) {
+        return guestPort.findAllArrivedByPartyId(partyId)
+                .stream()
+                .map(guest -> new Guest(partyId, guest))
+                .collect(toList());
+    }
 }
