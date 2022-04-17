@@ -11,6 +11,7 @@ import com.getground.guestlist.adapter.controller.model.GuestArriveResponse;
 import com.getground.guestlist.usecase.AddGuestToGuestList;
 import com.getground.guestlist.usecase.FindGuest;
 import com.getground.guestlist.usecase.RegisterGuestArrival;
+import com.getground.guestlist.usecase.RegisterGuestLeave;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -19,6 +20,7 @@ import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 import static java.util.Objects.requireNonNull;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
 @Api(tags = "Guest List Controller")
@@ -40,13 +43,16 @@ class GuestListController {
     private final AddGuestToGuestList addGuestToGuestList;
     private final FindGuest findGuest;
     private final RegisterGuestArrival registerGuestArrival;
+    private final RegisterGuestLeave registerGuestLeave;
 
     GuestListController(@NonNull final AddGuestToGuestList addGuestToGuestList,
                         @NonNull final FindGuest findGuest,
-                        @NonNull final RegisterGuestArrival registerGuestArrival) {
+                        @NonNull final RegisterGuestArrival registerGuestArrival,
+                        @NonNull final RegisterGuestLeave registerGuestLeave) {
         this.addGuestToGuestList = requireNonNull(addGuestToGuestList, "The addGuestToGuestList use case is mandatory.");
         this.findGuest = requireNonNull(findGuest, "The findGuest use case is mandatory.");
         this.registerGuestArrival = requireNonNull(registerGuestArrival, "The registerGuestArrival use case is mandatory.");
+        this.registerGuestLeave = requireNonNull(registerGuestLeave, "The registerGuestLeave use case is mandatory.");
     }
 
     @ResponseStatus(OK)
@@ -131,5 +137,21 @@ class GuestListController {
         LOGGER.debug("Marking guest as arrived. [PARTY_ID={},GUEST_NAME={}, REQUEST={}]", partyId, guestName, request);
         registerGuestArrival.register(request.toRegisterGuestArrival(partyId, guestName));
         return new GuestArriveResponse(guestName);
+    }
+
+    @ResponseStatus(NO_CONTENT)
+    @DeleteMapping("/parties/{partyId}/guest_list/{name}")
+    @ApiOperation(value = "registerGuestLeave", notes = "Registers a guest leave.", nickname = "registerGuestLeave")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "The guest leave is successfully registered."),
+            @ApiResponse(code = 500, message = "Internal error while processing the request.", response = ErrorResponse.class)
+    })
+    void registerGuestLeave(@ApiParam(value = "The identifier of the party. <b>Do not change this value for testing.</b>", required = true, example = "1", defaultValue = "1")
+                            @PathVariable(name = "partyId") final long partyId,
+
+                            @ApiParam(value = "The name of the guest.", required = true, example = "Wanda Hum")
+                            @PathVariable(name = "name") final String guestName) {
+        LOGGER.debug("Marking guest leave. [PARTY_ID={},GUEST_NAME={}]", partyId, guestName);
+        registerGuestLeave.register(partyId, guestName);
     }
 }
