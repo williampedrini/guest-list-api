@@ -5,6 +5,7 @@ import com.getground.guestlist.adapter.controller.model.AddGuestToListRequest;
 import com.getground.guestlist.adapter.controller.model.AddGuestToListResponse;
 import com.getground.guestlist.adapter.controller.model.ErrorResponse;
 import com.getground.guestlist.adapter.controller.model.GetGuestListResponse;
+import com.getground.guestlist.adapter.controller.model.GetGuestResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -201,6 +202,48 @@ public class GuestListControllerTest {
 
         final var expectedResponseFullPath = format(TEST_CASES_BASE_PATH, "when-there-are-not-guests-for-party/expected.json");
         final var expectedResponse = fileToBean(expectedResponseFullPath, GetGuestListResponse.class);
+        assertEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @Sql("classpath:test-cases/adapter/guest-list-controller/when-there-are-arrived-guests-for-party/insert.sql")
+    public void when_ThereAreArrivedGuestsForPartyId_Then_ShouldSuccessfullyReturnAllGuestsForParty() throws Exception {
+        //given
+        final var requestBuilder = request(GET, "/parties/1/guests")
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE);
+
+        //when
+        final var response = mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        final var actualRawResponse = response.getResponse().getContentAsByteArray();
+        final var actualResponse = byteArrayToBean(actualRawResponse, GetGuestResponse.class);
+
+        final var expectedResponseFullPath = format(TEST_CASES_BASE_PATH, "when-there-are-arrived-guests-for-party/expected.json");
+        final var expectedResponse = fileToBean(expectedResponseFullPath, GetGuestResponse.class);
+        assertEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @Sql("classpath:test-cases/adapter/guest-list-controller/when-there-are-not-arrived-guests-for-party/insert.sql")
+    public void when_ThereAreNotArrivedGuestsForPartyId_Then_ShouldSuccessfullyReturnEmptyGuestListForParty() throws Exception {
+        //given
+        final var requestBuilder = request(GET, "/parties/1/guests")
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE);
+
+        //when
+        final var response = mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        final var actualRawResponse = response.getResponse().getContentAsByteArray();
+        final var actualResponse = byteArrayToBean(actualRawResponse, GetGuestResponse.class);
+
+        final var expectedResponseFullPath = format(TEST_CASES_BASE_PATH, "when-there-are-not-arrived-guests-for-party/expected.json");
+        final var expectedResponse = fileToBean(expectedResponseFullPath, GetGuestResponse.class);
         assertEquals(expectedResponse, actualResponse);
     }
 }

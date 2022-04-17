@@ -1,0 +1,10 @@
+{
+  "guests": [
+    {
+      "name": "Louise Madron",
+      "table": 2,
+      "accompanying_guests": 9,
+      "time_arrived": "2022-01-01T00:00"
+    }
+  ]
+}
