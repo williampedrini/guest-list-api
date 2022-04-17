@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.getground.guestlist.adapter.controller.model.AddGuestToListRequest;
 import com.getground.guestlist.adapter.controller.model.AddGuestToListResponse;
 import com.getground.guestlist.adapter.controller.model.ErrorResponse;
+import com.getground.guestlist.adapter.controller.model.GetEmptySeatResponse;
 import com.getground.guestlist.adapter.controller.model.GetGuestListResponse;
 import com.getground.guestlist.adapter.controller.model.GetGuestResponse;
 import org.junit.Test;
@@ -244,6 +245,27 @@ public class GuestListControllerTest {
 
         final var expectedResponseFullPath = format(TEST_CASES_BASE_PATH, "when-there-are-not-arrived-guests-for-party/expected.json");
         final var expectedResponse = fileToBean(expectedResponseFullPath, GetGuestResponse.class);
+        assertEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @Sql("classpath:test-cases/adapter/guest-list-controller/when-there-are-empty-seats/insert.sql")
+    public void when_ThereAreEmptySeats_Then_ShouldSuccessfullyReturnTheEmptySeatCount() throws Exception {
+        //given
+        final var requestBuilder = request(GET, "/parties/1/seats_empty")
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE);
+
+        //when
+        final var response = mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        final var actualRawResponse = response.getResponse().getContentAsByteArray();
+        final var actualResponse = byteArrayToBean(actualRawResponse, GetEmptySeatResponse.class);
+
+        final var expectedResponseFullPath = format(TEST_CASES_BASE_PATH, "when-there-are-empty-seats/expected.json");
+        final var expectedResponse = fileToBean(expectedResponseFullPath, GetEmptySeatResponse.class);
         assertEquals(expectedResponse, actualResponse);
     }
 }
