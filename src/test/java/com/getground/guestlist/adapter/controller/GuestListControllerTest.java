@@ -27,6 +27,7 @@ import static com.getground.guestlist.util.JSONUtil.fileToBean;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
+import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
@@ -330,6 +331,41 @@ public class GuestListControllerTest {
         final var request = beanToString(requestFullPath, GuestArriveRequest.class);
         //when
         final var response = mockMvc.perform(requestBuilder.content(request))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        final var actualRawResponse = response.getResponse().getContentAsByteArray();
+        final var actualResponse = byteArrayToBean(actualRawResponse, ErrorResponse.class);
+
+        final var expectedResponseFullPath = format(TEST_CASES_BASE_PATH, "when-there-is-no-table-associated-to-guest/expected.json");
+        final var expectedResponse = fileToBean(expectedResponseFullPath, ErrorResponse.class);
+        assertEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @Sql("classpath:test-cases/adapter/guest-list-controller/when-there-is-table-associated-to-guest/insert.sql")
+    public void when_ThereIsTableAssociatedToTheGuest_Then_ShouldRegisterSuccessfullyTheGuestLeave() throws Exception {
+        //given
+        final var requestBuilder = request(DELETE, "/parties/1/guest_list/Wanda Hum")
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .accept(APPLICATION_JSON);
+
+        //when
+        final var response = mockMvc.perform(requestBuilder)
+                .andExpect(status().isNoContent())
+                .andReturn();
+    }
+
+    @Test
+    @Sql("classpath:test-cases/adapter/guest-list-controller/when-there-is-no-table-associated-to-guest-for-leave/insert.sql")
+    public void when_ThereIsNotAnyTableAssociatedToTheGuest_Then_ShouldThrowExceptionForLeaveRegistration() throws Exception {
+        //given
+        final var requestBuilder = request(DELETE, "/parties/1/guest_list/Wanda Hum")
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .accept(APPLICATION_JSON);
+
+        //when
+        final var response = mockMvc.perform(requestBuilder)
                 .andExpect(status().isBadRequest())
                 .andReturn();
 
