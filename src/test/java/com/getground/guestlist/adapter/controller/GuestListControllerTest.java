@@ -7,6 +7,8 @@ import com.getground.guestlist.adapter.controller.model.ErrorResponse;
 import com.getground.guestlist.adapter.controller.model.GetEmptySeatResponse;
 import com.getground.guestlist.adapter.controller.model.GetGuestListResponse;
 import com.getground.guestlist.adapter.controller.model.GetGuestResponse;
+import com.getground.guestlist.adapter.controller.model.GuestArriveRequest;
+import com.getground.guestlist.adapter.controller.model.GuestArriveResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
@@ -266,6 +269,75 @@ public class GuestListControllerTest {
 
         final var expectedResponseFullPath = format(TEST_CASES_BASE_PATH, "when-there-are-empty-seats/expected.json");
         final var expectedResponse = fileToBean(expectedResponseFullPath, GetEmptySeatResponse.class);
+        assertEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @Sql("classpath:test-cases/adapter/guest-list-controller/when-table-has-enough-seats/insert.sql")
+    public void when_NumberOfAccompanyingMatchesNumberOfTableSeats_Then_ShouldSuccessfullyRegisterGuestArrival() throws Exception {
+        //given
+        final var requestBuilder = request(PUT, "/parties/1/guest_list/Wanda Hum")
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .accept(APPLICATION_JSON);
+
+        final var requestFullPath = format(TEST_CASES_BASE_PATH, "when-table-has-enough-seats/input.json");
+        final var request = beanToString(requestFullPath, GuestArriveRequest.class);
+        //when
+        final var response = mockMvc.perform(requestBuilder.content(request))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        final var actualRawResponse = response.getResponse().getContentAsByteArray();
+        final var actualResponse = byteArrayToBean(actualRawResponse, GuestArriveResponse.class);
+
+        final var expectedResponseFullPath = format(TEST_CASES_BASE_PATH, "when-table-has-enough-seats/expected.json");
+        final var expectedResponse = fileToBean(expectedResponseFullPath, GuestArriveResponse.class);
+        assertEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @Sql("classpath:test-cases/adapter/guest-list-controller/when-table-has-not-enough-seats/insert.sql")
+    public void when_NumberOfAccompanyingDoesNotMatchNumberOfTableSeats_Then_ShouldThrowException() throws Exception {
+        //given
+        final var requestBuilder = request(PUT, "/parties/1/guest_list/Wanda Hum")
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .accept(APPLICATION_JSON);
+
+        final var requestFullPath = format(TEST_CASES_BASE_PATH, "when-table-has-not-enough-seats/input.json");
+        final var request = beanToString(requestFullPath, GuestArriveRequest.class);
+        //when
+        final var response = mockMvc.perform(requestBuilder.content(request))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        final var actualRawResponse = response.getResponse().getContentAsByteArray();
+        final var actualResponse = byteArrayToBean(actualRawResponse, ErrorResponse.class);
+
+        final var expectedResponseFullPath = format(TEST_CASES_BASE_PATH, "when-table-has-not-enough-seats/expected.json");
+        final var expectedResponse = fileToBean(expectedResponseFullPath, ErrorResponse.class);
+        assertEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    @Sql("classpath:test-cases/adapter/guest-list-controller/when-there-is-no-table-associated-to-guest/insert.sql")
+    public void when_ThereIsNotAnyTableAssociatedToTheGuest_Then_ShouldThrowException() throws Exception {
+        //given
+        final var requestBuilder = request(PUT, "/parties/1/guest_list/Wanda Hum")
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .accept(APPLICATION_JSON);
+
+        final var requestFullPath = format(TEST_CASES_BASE_PATH, "when-there-is-no-table-associated-to-guest/input.json");
+        final var request = beanToString(requestFullPath, GuestArriveRequest.class);
+        //when
+        final var response = mockMvc.perform(requestBuilder.content(request))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        final var actualRawResponse = response.getResponse().getContentAsByteArray();
+        final var actualResponse = byteArrayToBean(actualRawResponse, ErrorResponse.class);
+
+        final var expectedResponseFullPath = format(TEST_CASES_BASE_PATH, "when-there-is-no-table-associated-to-guest/expected.json");
+        final var expectedResponse = fileToBean(expectedResponseFullPath, ErrorResponse.class);
         assertEquals(expectedResponse, actualResponse);
     }
 }
