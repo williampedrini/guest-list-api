@@ -4,6 +4,7 @@ import com.getground.guestlist.adapter.controller.model.AddGuestToListRequest;
 import com.getground.guestlist.adapter.controller.model.AddGuestToListResponse;
 import com.getground.guestlist.adapter.controller.model.ErrorResponse;
 import com.getground.guestlist.adapter.controller.model.GetGuestListResponse;
+import com.getground.guestlist.adapter.controller.model.GetGuestResponse;
 import com.getground.guestlist.usecase.AddGuestToGuestList;
 import com.getground.guestlist.usecase.FindGuest;
 import io.swagger.annotations.Api;
@@ -73,5 +74,19 @@ class GuestListController {
         LOGGER.debug("Performing search of all existing guests. [PARTY_ID={}]", partyId);
         final var guests = findGuest.findAllByPartyId(partyId);
         return new GetGuestListResponse(guests);
+    }
+
+    @ResponseStatus(OK)
+    @GetMapping("/parties/{partyId}/guests")
+    @ApiOperation(value = "findAllArrivedGuests", notes = "Searches for all existing guests in the guest list who arrived at the party.", nickname = "findAllArrivedGuests")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "All existing guests are retrieved.", response = GetGuestResponse.class),
+            @ApiResponse(code = 500, message = "Internal error while processing the request.", response = ErrorResponse.class)
+    })
+    GetGuestResponse findAllArrivedGuests(@ApiParam(value = "The identifier of the party. <b>Do not change this value for testing.</b>", required = true, example = "1", defaultValue = "1")
+                                          @PathVariable(name = "partyId") final long partyId) {
+        LOGGER.debug("Performing search of all arrived guests. [PARTY_ID={}]", partyId);
+        final var guests = findGuest.findAllArrivedByPartyId(partyId);
+        return new GetGuestResponse(guests);
     }
 }
