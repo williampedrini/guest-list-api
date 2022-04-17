@@ -3,6 +3,7 @@ package com.getground.guestlist.adapter.controller;
 import com.getground.guestlist.adapter.controller.model.AddGuestToListRequest;
 import com.getground.guestlist.adapter.controller.model.AddGuestToListResponse;
 import com.getground.guestlist.adapter.controller.model.ErrorResponse;
+import com.getground.guestlist.adapter.controller.model.GetEmptySeatResponse;
 import com.getground.guestlist.adapter.controller.model.GetGuestListResponse;
 import com.getground.guestlist.adapter.controller.model.GetGuestResponse;
 import com.getground.guestlist.usecase.AddGuestToGuestList;
@@ -88,5 +89,19 @@ class GuestListController {
         LOGGER.debug("Performing search of all arrived guests. [PARTY_ID={}]", partyId);
         final var guests = findGuest.findAllArrivedByPartyId(partyId);
         return new GetGuestResponse(guests);
+    }
+
+    @ResponseStatus(OK)
+    @GetMapping("/parties/{partyId}/seats_empty")
+    @ApiOperation(value = "findAllEmptySeats", notes = "Searches for all existing empty seats.", nickname = "findAllEmptySeats")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "All existing guests are retrieved.", response = GetEmptySeatResponse.class),
+            @ApiResponse(code = 500, message = "Internal error while processing the request.", response = ErrorResponse.class)
+    })
+    GetEmptySeatResponse findAllEmptySeats(@ApiParam(value = "The identifier of the party. <b>Do not change this value for testing.</b>", required = true, example = "1", defaultValue = "1")
+                                           @PathVariable(name = "partyId") final long partyId) {
+        LOGGER.debug("Performing search of all existing empty seats. [PARTY_ID={}]", partyId);
+        final var emptySeats = findGuest.findEmptySeats(partyId);
+        return new GetEmptySeatResponse(emptySeats);
     }
 }
